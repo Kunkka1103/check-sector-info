@@ -150,7 +150,8 @@ func main() {
 			for _, dealID := range sector.DealIDs {
 				dealInfo, err := delegate.StateMarketStorageDeal(ctx, dealID, types.EmptyTSK)
 				if err != nil {
-					log.Fatalf("failed to get deal info, err: %s", err)
+					log.Printf("failed to get deal info, err: %s\n", err)
+					continue
 				}
 				dealStartEpochs = append(dealStartEpochs, int(dealInfo.Proposal.StartEpoch))
 			}
