@@ -14,7 +14,7 @@ import (
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/lotus/api/client"
-	"github.com/filecoin-project/lotus/api/v0api"
+	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 	"github.com/shopspring/decimal"
@@ -23,10 +23,10 @@ import (
 	timeToHeight "check-sector-info/time-height"
 )
 
-func ConnectClient(apiUrl string) (v0api.FullNode, jsonrpc.ClientCloser, error) {
+func ConnectClient(apiUrl string) (v1api.FullNode, jsonrpc.ClientCloser, error) {
 	header := http.Header{}
 	ctx := context.Background()
-	return client.NewFullNodeRPCV0(ctx, apiUrl, header)
+	return client.NewFullNodeRPCV1(ctx, apiUrl, header)
 }
 
 var url = flag.String("l", "http://127.0.0.1:1234/rpc/v0", "lotusAPI")
@@ -146,8 +146,8 @@ func main() {
 
 		var dealStartEpochs []int
 
-		if len(sector.DealIDs) != 0 {
-			for _, dealID := range sector.DealIDs {
+		if len(sector.DeprecatedDealIDs) != 0 {
+			for _, dealID := range sector.DeprecatedDealIDs {
 				dealInfo, err := delegate.StateMarketStorageDeal(ctx, dealID, types.EmptyTSK)
 				if err != nil {
 					log.Printf("failed to get deal info, err: %s\n", err)
@@ -179,7 +179,7 @@ func main() {
 				sector.DealWeight,
 				sector.VerifiedDealWeight,
 				divideBy10ToThe18thDecimal(sector.InitialPledge),
-				sector.DealIDs,
+				sector.DeprecatedDealIDs,
 				dealStartEpochs)
 		}
 		groups[timeToHeight.HeightToDay(sector.Expiration)] = append(groups[timeToHeight.HeightToDay(sector.Expiration)], *sector)
