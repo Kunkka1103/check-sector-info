@@ -13,7 +13,7 @@ import (
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-jsonrpc"
 	"github.com/filecoin-project/lotus/api/client"
-	"github.com/filecoin-project/lotus/api/v0api"
+	"github.com/filecoin-project/lotus/api/v1api"
 	"github.com/filecoin-project/lotus/chain/actors/builtin/miner"
 	"github.com/filecoin-project/lotus/chain/types"
 
@@ -21,10 +21,10 @@ import (
 	timeToHeight "check-sector-info/time-height"
 )
 
-func ConnectClient(apiUrl string) (v0api.FullNode, jsonrpc.ClientCloser, error) {
+func ConnectClient(apiUrl string) (v1api.FullNode, jsonrpc.ClientCloser, error) {
 	header := http.Header{}
 	ctx := context.Background()
-	return client.NewFullNodeRPCV0(ctx, apiUrl, header)
+	return client.NewFullNodeRPCV1(ctx, apiUrl, header)
 }
 
 var url = flag.String("l", "http://127.0.0.1:1234/rpc/v0", "lotusAPI")
@@ -111,7 +111,7 @@ func main() {
 				if err != nil {
 					fmt.Println(err)
 				}
-				if len(s.DealIDs) == 0 {
+				if len(s.DeprecatedDealIDs) == 0 {
 					CCCount += 1
 					CCPledge += f
 				} else {

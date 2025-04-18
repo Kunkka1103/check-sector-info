@@ -10,6 +10,11 @@ import (
 	"strings"
 )
 
+type Cluster struct {
+	Name  string
+	Miner string
+}
+
 func InitDB(DSN string) (DB *sql.DB, err error) {
 
 	DB, err = sql.Open("mysql", DSN)
@@ -74,4 +79,22 @@ func GetMiner(db *sql.DB, cluster string) (miner string, err error) {
 	SQL := fmt.Sprintf("SELECT f0 FROM cluster_list WHERE name='%s'", cluster)
 	err = db.QueryRow(SQL).Scan(&miner)
 	return miner, err
+}
+
+func GetCluster(db *sql.DB) (clusterList []Cluster, err error) {
+	GetSQL := "SELECT name,f0 FROM cluster_list"
+	rows, err := db.Query(GetSQL)
+	if err != nil {
+		return nil, err
+	}
+	var c Cluster
+	for rows.Next() {
+		err = rows.Scan(&c.Name, &c.Miner)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		clusterList = append(clusterList, c)
+	}
+	return clusterList, nil
 }
